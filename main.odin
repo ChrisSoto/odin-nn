@@ -65,7 +65,8 @@ FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) {
 	layer := 0
 	output := make([]f32, nn.sizes[nn.num_layers - 1])
 	for w in nn.weights {
-		// add up all the weights*input in the first row
+		// add up all the weights per input then multiply by activation
+		// don't multiply output by activation
 	}
 }
 
