@@ -14,17 +14,21 @@ CreateWeights :: proc(sizes: []int) -> (weights: []f32) {
 	return weights
 }
 
-CreateBiases :: proc(sizes: []int) -> (biases: []f32) {
+CreateBiases :: proc(sizes: []int, init_rand := false) -> (biases: []f32) {
 	hiddenAndOutput := 0
 	// add up hidden plus output layers
 	for size in sizes[1:] {
 		hiddenAndOutput += size
 	}
 	biases = make([]f32, hiddenAndOutput)
-	// set random numbers
-	for &bias in biases {
-		bias = rand.float32_normal(0, 1)
+
+	if init_rand {
+		// set random numbers
+		for &bias in biases {
+			bias = rand.float32_normal(0, 1)
+		}
 	}
+
 	return biases
 }
 
