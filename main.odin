@@ -61,7 +61,7 @@ CreateNN :: proc(sizes: []int) -> (nn: NeuralNetwork) {
 	return nn
 }
 
-FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) -> (output: []f32) {
+FeedFowrard :: proc(nn: NeuralNetwork, inputs: []f32) -> (output: []f32) {
 	weight_index := 0
 	bias_index := 0
 	curr_layer := inputs
@@ -90,7 +90,7 @@ FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) -> (output: []f32) {
 main :: proc() {
 
 	test_nn := CreateNN({2, 3, 1})
-	out := FeedFowrard(&test_nn, {9, 9})
+	out := FeedFowrard(test_nn, {9, 9})
 	fmt.println(out)
 	// testing_size := 1000
 	// plot_data := make([]PlotData, testing_size)
