@@ -61,37 +61,37 @@ CreateNN :: proc(sizes: []int) -> (nn: NeuralNetwork) {
 	return nn
 }
 
-FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) {
-	layer := 0
-	output := make([]f32, nn.sizes[nn.num_layers - 1])
-	for w in nn.weights {
-		// add up all the weights per input then multiply by activation
-		// don't multiply output by activation
+FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) -> (output: []f32) {
+	weight_index := 0
+	bias_index := 0
+	curr_layer := inputs
+	input_size := nn.sizes[0]
+	for layer := 1; layer < nn.num_layers; layer += 1 {
+		num_neurons := nn.sizes[layer]
+		next_layer := make([]f32, num_neurons)
+		for j := 0; j < num_neurons; j += 1 {
+			sum: f32 = 0
+			for i := 0; i < input_size; i += 1 {
+				sum += curr_layer[i] * nn.weights[weight_index]
+				weight_index += 1
+			}
+			sum += nn.biases[bias_index]
+			next_layer[j] = Sigmoid(sum)
+			bias_index += 1
+		}
+		curr_layer = next_layer
+		input_size = num_neurons
+		delete(next_layer)
 	}
+	output = curr_layer
+	return output
 }
-
-// FeedFowrard :: proc(nn: ^NeuralNetwork, inputs: []f32) -> []f32 {
-// 	row := 0
-// 	output := make([]f32, nn.out_len)
-// 	for i := 1; i <= len(nn.weights); i += 1 {
-// 		col := i % nn.in_len
-// 		output[row] += nn.weights[i - 1] * inputs[col]
-// 		if i >= nn.in_len && col == 0 {
-// 			output[row] += nn.bias[row]
-// 			output[row] = Sigmoid(output[row])
-// 			row += 1
-// 		}
-// 	}
-// 	return output
-// }
-
 
 main :: proc() {
 
 	test_nn := CreateNN({2, 3, 1})
-
-	FeedFowrard(&test_nn, {0, 0})
-
+	out := FeedFowrard(&test_nn, {9, 9})
+	fmt.println(out)
 	// testing_size := 1000
 	// plot_data := make([]PlotData, testing_size)
 	// defer delete(plot_data)
