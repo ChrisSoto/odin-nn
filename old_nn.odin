@@ -50,6 +50,7 @@ package nn
 // 	return x / (1 + math.abs(x))
 // }
 
+
 // BackPropagate :: proc(nn: ^NeuralNetwork, inputs: []f32, target: []f32) {
 // 	assert(nn.in_len == len(inputs), "inputs length does't match network")
 // 	assert(nn.out_len == len(target), "target length doesn't match network")

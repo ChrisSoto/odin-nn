@@ -4,7 +4,6 @@ import rl "vendor:raylib"
 
 ToScreenSpace :: proc(position: [2]f32) -> [2]i32 {
 	return {i32(((position.x + 1) * WIDTH) / 2), i32(HEIGHT - (((position.y + 1) * HEIGHT) / 2))}
-	// return {i32((position.x + WIDTH / 2) * WIDTH / 2), i32((HEIGHT / 2 - position.y) * HEIGHT / 2)}
 }
 
 

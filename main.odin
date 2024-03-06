@@ -87,12 +87,43 @@ FeedFowrard :: proc(nn: NeuralNetwork, inputs: []f32) -> (output: []f32) {
 	return output
 }
 
+BackPropagate :: proc(nn: ^NeuralNetwork, inputs: []f32, target: []f32) {
+	weight_index := 0
+	bias_index := 0
+	outputs := FeedFowrard(nn^, inputs)
+	errors := make([]f32, nn.sizes[nn.num_layers - 1])
+	fmt.println(len(errors), len(target), len(outputs))
+	input_size := nn.sizes[0]
+	for layer := 1; layer < nn.num_layers; layer += 1 {
+		num_neurons := nn.sizes[layer]
+
+		for j := 0; j < num_neurons; j += 1 {
+
+			errors[j] = target[j] - outputs[j]
+
+			for i := 0; i < input_size; i += 1 {
+				nn.weights[weight_index] +=
+					LEARNING_RATE * errors[j] * outputs[j] * (1 - outputs[j]) * inputs[i]
+				weight_index += 1
+			}
+			nn.biases[bias_index] += LEARNING_RATE * errors[j]
+			bias_index += 1
+		}
+
+		input_size = num_neurons
+	}
+}
+
 main :: proc() {
 
-	test_nn := CreateNN({2, 3, 1})
-	out := FeedFowrard(test_nn, {9, 9})
-	fmt.println(out)
-	// testing_size := 1000
+	test_nn := CreateNN({2, 5, 4})
+	// out := FeedFowrard(test_nn, {9, 9})
+	// fmt.println(out)
+
+	data := rand.choice(training_data[:])
+	BackPropagate(&test_nn, {data.x, data.y}, encoding[data.label])
+
+	// testing_size := 100
 	// plot_data := make([]PlotData, testing_size)
 	// defer delete(plot_data)
 
