@@ -47,3 +47,8 @@ Max :: proc(arr: []f32) -> (max: f32, i: int) {
 Sigmoid :: proc(x: f32) -> f32 {
 	return 1 / (1 + math.exp_f32(-x))
 }
+
+SigmoidDerivative :: proc(x: f32) -> f32 {
+	fx := Sigmoid(x)
+	return fx * (1 - fx)
+}

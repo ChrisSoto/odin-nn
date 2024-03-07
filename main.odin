@@ -75,8 +75,10 @@ FeedFowrard :: proc(nn: NeuralNetwork, inputs: []f32) -> (output: []f32) {
 				sum += curr_layer[i] * nn.weights[weight_index]
 				weight_index += 1
 			}
+			// add bias
 			sum += nn.biases[bias_index]
-			next_layer[j] = Sigmoid(sum)
+			// last layer doesn't use sigmoid
+			next_layer[j] = layer != nn.num_layers - 1 ? Sigmoid(sum) : sum
 			bias_index += 1
 		}
 		curr_layer = next_layer
@@ -88,35 +90,33 @@ FeedFowrard :: proc(nn: NeuralNetwork, inputs: []f32) -> (output: []f32) {
 }
 
 BackPropagate :: proc(nn: ^NeuralNetwork, inputs: []f32, target: []f32) {
-	weight_index := 0
-	bias_index := 0
 	outputs := FeedFowrard(nn^, inputs)
-	errors := make([]f32, nn.sizes[nn.num_layers - 1])
-	fmt.println(len(errors), len(target), len(outputs))
-	input_size := nn.sizes[0]
-	for layer := 1; layer < nn.num_layers; layer += 1 {
-		num_neurons := nn.sizes[layer]
+	activated_outputs := Activate(outputs) // will add activation type later
+	delta := CalculateDelta(outputs, activated_outputs, target) // add activation type later
 
-		for j := 0; j < num_neurons; j += 1 {
+	// need to calculate the partial derivative for each layer of neurons
+	// apply the partial derivative to the weights activations and biases
+}
 
-			errors[j] = target[j] - outputs[j]
-
-			for i := 0; i < input_size; i += 1 {
-				nn.weights[weight_index] +=
-					LEARNING_RATE * errors[j] * outputs[j] * (1 - outputs[j]) * inputs[i]
-				weight_index += 1
-			}
-			nn.biases[bias_index] += LEARNING_RATE * errors[j]
-			bias_index += 1
-		}
-
-		input_size = num_neurons
+CalculateDelta :: proc(outputs: []f32, activated: []f32, target: []f32) -> (delta: []f32) {
+	delta = make([]f32, len(outputs)) // same size as outputs
+	for o := 0; o < len(outputs); o += 1 {
+		delta[o] = 2 * (activated[o] - target[o]) * SigmoidDerivative(outputs[o])
 	}
+	return delta
+}
+
+Activate :: proc(outputs: []f32) -> (activated: []f32) {
+	activated = make([]f32, len(outputs))
+	for i := 0; i < len(outputs); i += 1 {
+		activated[i] = Sigmoid(outputs[i])
+	}
+	return activated
 }
 
 main :: proc() {
 
-	test_nn := CreateNN({2, 5, 4})
+	test_nn := CreateNN({1, 1, 1})
 	// out := FeedFowrard(test_nn, {9, 9})
 	// fmt.println(out)
 
