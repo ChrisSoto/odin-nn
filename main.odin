@@ -77,7 +77,7 @@ FeedFowrard :: proc(nn: NeuralNetwork, inputs: []f32) -> (output: []f32) {
 			}
 			// add bias
 			sum += nn.biases[bias_index]
-			// last layer doesn't use sigmoid
+			// last layer doesn't use activation
 			next_layer[j] = layer != nn.num_layers - 1 ? Sigmoid(sum) : sum
 			bias_index += 1
 		}
